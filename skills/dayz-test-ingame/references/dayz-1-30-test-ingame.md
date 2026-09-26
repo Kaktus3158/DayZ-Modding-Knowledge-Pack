@@ -65,7 +65,7 @@ dummy bots.
 
 The managed launcher runs the 1.29 install. Probing the Exp install by hand
 (measured 2026-09-26, evidence in `VAULT/AI/10_Projects/DayZ_MCP/lanes/2026-09-26-roboclient-130/`)
-hit five traps, each costing a run:
+hit six traps, each costing a run:
 
 1. **The script log is the define oracle.** Each module logs
    `Module: <name>; …; defines: "…"`. Reading that line after a launch to the main
@@ -94,6 +94,10 @@ hit five traps, each costing a run:
    dumps you do not need.
 5. **Own the PID.** Out-of-lifecycle probes start and stop only the process they
    launched, and hold the MCP lease while they run so no managed run lands on top.
+6. **Use a fresh `-profiles=` directory per run.** A readiness check that greps the
+   newest `script_*.log` found a log left by an earlier run in the same directory.
+   It reported the server ready and the client connected at +0 s (2026-09-26): the
+   run looked healthy and measured nothing.
 
 ## Measuring server load
 
@@ -107,13 +111,24 @@ What worked on 2026-09-26 (dummy-bot load, same evidence folder):
   of the server mission (`5_Mission\mission\missionServer.c:108`) and log per
   window: frames, seconds, FPS, max frame time. Sample the process
   `TotalProcessorTime` every second from outside and join by timestamp.
-- **Skip the first minutes after a fresh CE start.** The first three windows of a
-  fresh storage ran at 36-84 % machine CPU; a final baseline after deleting all
-  load returned to 0.007 cores. Warm up two minutes, and end with a baseline.
-- **Separate spawn transients.** With a 15 s settle, the idle window right after
-  spawning 25 or 50 dummies cost more than the moving window that followed it
-  (0.201 vs 0.010 and 0.179 vs 0.032 cores). Settle longer (45 s) before
-  measuring idle.
+- **Bracket the run with baselines, and do not trust a fixed warm-up.** The first three
+  windows of run 2 (a fresh storage) ran at 36-84 % machine CPU. In run 3 a 120 s
+  warm-up was not enough either: its first baseline used 0.276 server cores, against
+  0.001 at the baseline taken after deleting all load. Record a baseline at both ends,
+  and treat a large mismatch as an inconclusive comparison.
+- **Check post-spawn idle windows.** After 15 s settles in run 2, the idle window right
+  after spawning 25 dummies used 0.201 server cores against 0.010 in the moving window
+  after it, with the machine nearly idle (3.8 % CPU). At 50 dummies the gap was 0.179
+  against 0.032 cores, but machine CPU was 49.2 % during that idle window. The cause
+  was not isolated. Run 3 used 45 s settles and its idle windows after spawning 50 and
+  100 averaged 60.0 FPS; that does not make 45 s a validated settle time for CPU.
+- **Keep the CPU sampler cheap, and check it for gaps.** In run 3 the 1 s sampler went
+  58.7 s without a sample across a spawn. Its loop also ran a WMI machine-CPU query and
+  a script-log scan every 5 s; the cause was not isolated. The gap crossed two windows,
+  which kept only 32 and 43 of their 45 s sampled. An analyzer that takes the nearest
+  samples around a window then mixes stages into its CPU delta. Use the samples inside
+  the window, report how much of it they cover, and drop the window when coverage is
+  short. The in-server FPS meter was unaffected.
 - **Write CSV numbers with the invariant culture (LL-524).** On an es-ES host,
   `'{0:F3}' -f` writes decimal commas and silently splits every CSV row into
   extra columns. Use `[string]::Format([Globalization.CultureInfo]::InvariantCulture, …)`.

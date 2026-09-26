@@ -261,10 +261,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "harvest-718f-abef@2026-09-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Changed entry for the run-3 correction of the dayz-mcp-verify load table and the two new dayz-test-ingame traps.",
+          "license": "MIT",
+          "source_hash": "119f21cb5a8b3b89b2fe400e3fa7d5c4fff0b257a5bfe178d027bebe5b422cd5",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "roboclient-run3@2026-09-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f801126b7d6a4b0325d08815011a292899ef5d7697c13ebf6ef98ee8ea29f195",
+      "output_hash": "119f21cb5a8b3b89b2fe400e3fa7d5c4fff0b257a5bfe178d027bebe5b422cd5",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -12285,10 +12295,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "roboclient-130@2026-09-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "CLAIM-DZ130-DUMMY-BOT-SERVER-MOVES and CLAIM-DZ130-HEADLESS-CLIENT-CRASH: line ranges moved with the edited reference, and the run-3 evidence (section H, run3 results) joins their locators.",
+          "license": "MIT",
+          "source_hash": "f2f3e1e96fea7ac965948b6ab1e42bd1dacb2d2a72d4406105b5f67813d44702",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "roboclient-run3@2026-09-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7194ecf66016c1675c284859a8747fba4585e3919ea8843e107e3c49a2074937",
+      "output_hash": "f2f3e1e96fea7ac965948b6ab1e42bd1dacb2d2a72d4406105b5f67813d44702",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -24368,10 +24388,20 @@
           "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
           "source_revision": "roboclient-130@2026-09-26",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Run 3 (50 and 100 dummies on a 10-wide grid, 45 s settles) joins the load table with machine CPU per window: 100 moving dummies averaged 60 FPS in run 3, run 2's drop came with 34 % host load, and the difference is not isolated. Headless-client crash 3 of 3; exact displacement figures.",
+          "license": "MIT",
+          "source_hash": "0ca8fe983e40219e0779188620fa70798416d1b9a7afe8ce3035e3075f847352",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
+          "source_revision": "roboclient-run3@2026-09-26",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "9e80cf3a072db0f858783f821a8beb38c9df755d855255ab995fd4f84f054f96",
+      "output_hash": "0ca8fe983e40219e0779188620fa70798416d1b9a7afe8ce3035e3075f847352",
       "output_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "historical"
@@ -24574,10 +24604,20 @@
           "source_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
           "source_revision": "roboclient-130@2026-09-26",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Two traps measured on 2026-09-26 (a stale script log in a reused -profiles directory, a CPU sampler that stalled 58.7 s); the warm-up and post-spawn settle advice is no longer presented as validated.",
+          "license": "MIT",
+          "source_hash": "1669450f6618a1ce8dce15f8ed3c3e4ebe3bea29c46267a27885654f1d1e27f5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
+          "source_revision": "roboclient-run3@2026-09-26",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "a612b52b911c978e4fc02a23c3283d3e295d56f59299a2723eea5d7ad37fa2ee",
+      "output_hash": "1669450f6618a1ce8dce15f8ed3c3e4ebe3bea29c46267a27885654f1d1e27f5",
       "output_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "historical"
