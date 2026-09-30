@@ -274,7 +274,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "119f21cb5a8b3b89b2fe400e3fa7d5c4fff0b257a5bfe178d027bebe5b422cd5",
+      "output_hash": "99cb0cc498bda4921e8d83da91240b407337cdd069bf52a2820558955cae3c5e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2377,10 +2377,30 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion@2026-09-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Advanced by promote --apply for transaction 3f04dab022968bbd61cb3841 (2026-09-28): 4 pins moved to the digests their stores reached on write and 0 added. Resealed in the promotion commit, as LL-515 requires.",
+          "license": "MIT",
+          "source_hash": "ff6241d6259cbb2bf2c3f0499e607d301a107ccb89547acf9e906102bfcb74b7",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "promotion@2026-09-28",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Advanced by promote --apply for transaction 184d310847e3046884b4837d (2026-09-29): 4 pins moved to the digests their stores reached on write and 0 added. Resealed in the promotion commit, as LL-515 requires.",
+          "license": "MIT",
+          "source_hash": "cfbd1c79c704477d154b2841353dc797969d6be4937e0b55255a9844d769b26a",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "promotion@2026-09-29",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e5811800c2d7d3e4480c08d2c575dd5b1c641368de6b70860ce5b1c0132a7d3a",
+      "output_hash": "cfbd1c79c704477d154b2841353dc797969d6be4937e0b55255a9844d769b26a",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -2963,7 +2983,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "bd7e6b3fd56dbdcc1accad514210671a898f62c4a3e2b50d14325114ca69138d",
+      "output_hash": "d28aaab165939edcf93790962489213fea2db448580774daefb7e584fbd79c68",
       "output_path": "skills/blender-animation/SKILL.md",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
@@ -3069,7 +3089,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c96e2ff6f5c5cafc148912766e35db7981950b4171cefb3e18ff14123f63462e",
+      "output_hash": "f321084dcd2250c4d4732d267ce82fc316b27d2ddcfab4018acb3d4623c91077",
       "output_path": "skills/blender-animation/references/dayz-handoff.md",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
@@ -3643,7 +3663,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "922d42615c30081d1095334cf37d6b8c9460d24e49cf8f767c73df3ed9f5ac07",
+      "output_hash": "a305f5ef4164931148cf542686b17fa9cd2a4a80a9a88919aedfd1fb0306b19e",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3665,7 +3685,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3e924e3ac3c0cacfe1c18288bea8233cc0125f7fb873df2d156337abb6f0ebe5",
+      "output_hash": "e4f2d2533092b68946593552e96c3ce9bc648ea7b555303907bbc8f241e429d2",
       "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3775,7 +3795,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b410d69e04b8203c17a29b9071ec5b4de143a397edb6135d9b3dffa825139fa9",
+      "output_hash": "46cd1143ec289b1ccb122e3991755bc83b09e9e93acb4f20913e3c3dd23ec812",
       "output_path": "skills/dayz-animation-pipeline/references/item-ik-and-hide.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3885,7 +3905,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4789b5ab99b0d61d0c5b8d87c274c9bfd4884da969c7eb1345285bc0e92a2664",
+      "output_hash": "818be32d4c21a354b03f4585c67d7be0bb74a2fd8735b1c432d6c57d6c238fd1",
       "output_path": "skills/dayz-animation-pipeline/references/skeletal-anm-enfusion.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3929,7 +3949,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6c9da2903d606abe099625608c19d91783e2ee99e9a4d67edb5a6fa210e873f0",
+      "output_hash": "4cf557d0e0ab9d605ce56c1eae8f534ac7ea3cd083548184f22da63438aa34b1",
       "output_path": "skills/dayz-animation-pipeline/references/tooling-and-walls.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -3951,7 +3971,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "da6a380f58ede02b87f1843d2d49b4b7c3cf64100b2e1572024c48563177202d",
+      "output_hash": "68bd66ee95181102afd95ce54deedcf8c04da3811b8c040046a64e14cdcd231a",
       "output_path": "skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -7671,7 +7691,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "37550f71e630f6cc1e416c28f38724f618623396957d1da927fd0c2e3922edbd",
+      "output_hash": "237997502073da00118b34220ea53a84706810826ab5251c23e6d1d6b7554ca2",
       "output_path": "skills/dayz-realistic-animation-director/references/domain-gates.md",
       "routing_artifact_id": "skill/dayz-realistic-animation-director",
       "verification_level": "cross_checked"
@@ -12318,7 +12338,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f2f3e1e96fea7ac965948b6ab1e42bd1dacb2d2a72d4406105b5f67813d44702",
+      "output_hash": "ff1798f3fe7171f7f9a46602324746b105d346b066f602a31ae48e2a3f70b51e",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -24763,6 +24783,52 @@
       "license": "MIT",
       "output_hash": "ad011dea95785583599397f2d42f317dfcdf08d62666d40aab2349f2eb06d0eb",
       "output_path": "promotions/receipts/4efc58ed02c8ffefb3996682.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/3f04dab022968bbd61cb3841.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt written by promote --apply on 2026-09-28 for transaction 3f04dab022968bbd61cb3841: the promotion of 45c222f (dayz-animation-pipeline: the per-vehicle rider .asi route measured in game while the vehicle stands, LFDucati B1, with the 1.29-graph and sub-graph corrections of the same day; dayz-realistic-animation-director: the creature-graph text correction) to claude_user_skills, agents_user_skills and obsidian_snapshots, 117 operations, check WARN (only the expected PROMOTION-DRIFT, 74 of 117 operations changing: the two skills in both user trees and 72 new obsidian snapshots), apply done, receipt written, both user trees compared file by file with the commit (equal except the path aliases the local targets expand), run from the kp-recon worktree the previous receipts are bound to.",
+          "license": "MIT",
+          "source_hash": "7eda38a1f3fbcf77ebaa3b5351afc461644d86e34249efc311a0939dd273c2af",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/3f04dab022968bbd61cb3841.json",
+          "source_revision": "promotion@2026-09-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7eda38a1f3fbcf77ebaa3b5351afc461644d86e34249efc311a0939dd273c2af",
+      "output_path": "promotions/receipts/3f04dab022968bbd61cb3841.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/184d310847e3046884b4837d.json",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Receipt written by promote --apply on 2026-09-29 for transaction 184d310847e3046884b4837d: the promotion of fea4b2c (dayz-animation-pipeline: own rider clips measured in game stopped and riding on the H2R, LFRider, the +/-45 degree steering scale of the 1.30 motorbike graph, transitions written as absolute poses, the bars-angle probe, the negative bone-id correction, the DayZATool round trip, and the one-graph-wall and LL-052 scopes; blender-animation: DayZATool on a Windows host) to claude_user_skills, agents_user_skills and obsidian_snapshots, 117 operations, check WARN (only the expected PROMOTION-DRIFT, 74 of 117 operations changing: the two skills in both user trees and 72 obsidian snapshots), apply PASS with 0 findings, run from the kp-recon worktree the previous receipts are bound to.",
+          "license": "MIT",
+          "source_hash": "46ee260b57f1c2b00be8951d643d586ac8fcc00f7b39acf845e3856fae1e057b",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/184d310847e3046884b4837d.json",
+          "source_revision": "promotion@2026-09-29",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "46ee260b57f1c2b00be8951d643d586ac8fcc00f7b39acf845e3856fae1e057b",
+      "output_path": "promotions/receipts/184d310847e3046884b4837d.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
