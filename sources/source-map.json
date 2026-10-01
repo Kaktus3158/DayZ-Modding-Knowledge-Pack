@@ -14,10 +14,20 @@
           "source_path": ".cursorrules",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 release v1.4.0: agent instruction files for Copilot and Cursor carried the 1.0-era counts (16 playbooks, five tools); aligned with AGENTS.md (42 playbooks, ten Python tools, measured on the tree in #16). Found by Claude (Anthropic) in a final sweep.",
+          "license": "MIT",
+          "source_hash": "cdd200533d8b5f0ba7186abf7ba9313febf3aad98f15309f309475b17762fb8b",
+          "source_id": "pack-r21-authored",
+          "source_path": ".cursorrules",
+          "source_revision": "release-v1.4.0@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "efe1e5200d861fadcbb8aebb86bb034f0abd6729f77409a2ac4d6bd4687afa52",
+      "output_hash": "cdd200533d8b5f0ba7186abf7ba9313febf3aad98f15309f309475b17762fb8b",
       "output_path": ".cursorrules",
       "routing_artifact_id": "root/cursorrules",
       "verification_level": "cross_checked"
@@ -69,10 +79,20 @@
           "source_path": ".github/copilot-instructions.md",
           "source_revision": "r22-tool-routing@2026-08-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 release v1.4.0: agent instruction files for Copilot and Cursor carried the 1.0-era counts (16 playbooks, five tools); aligned with AGENTS.md (42 playbooks, ten Python tools, measured on the tree in #16). Found by Claude (Anthropic) in a final sweep.",
+          "license": "MIT",
+          "source_hash": "dfeabb9146697c71e19e2f957c854df8eb2f7f339de84ceaf52617a5d3ee3c5b",
+          "source_id": "pack-r21-authored",
+          "source_path": ".github/copilot-instructions.md",
+          "source_revision": "release-v1.4.0@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1bab9cc3b91061722136599627cfd5c3aeb8af4513c7580b8ed140cc37de8332",
+      "output_hash": "dfeabb9146697c71e19e2f957c854df8eb2f7f339de84ceaf52617a5d3ee3c5b",
       "output_path": ".github/copilot-instructions.md",
       "routing_artifact_id": "root/copilot-instructions",
       "verification_level": "cross_checked"
@@ -281,10 +301,30 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "roboclient-run3@2026-09-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 release v1.4.0: CHANGELOG [1.4.0] folded from this update's PRs (#16-#26); DayZ 1.30 coverage counts in README section 9 and compatibility-matrix regenerated from the tree (28 skills + dayz-motorbikes). Prepared by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4610906c71e65066e391db80c8cd538dc8a698b8142cbbe05b5e52c65e541518",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "release-v1.4.0@2026-10-01",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 release v1.4.0: agent instruction files for Copilot and Cursor carried the 1.0-era counts (16 playbooks, five tools); aligned with AGENTS.md (42 playbooks, ten Python tools, measured on the tree in #16). Found by Claude (Anthropic) in a final sweep.",
+          "license": "MIT",
+          "source_hash": "b43fc1a5f4ba2620c3a514e1ee92e05e070ac297cc33c2ce25cd0456ab21b55d",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "release-v1.4.0@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "99cb0cc498bda4921e8d83da91240b407337cdd069bf52a2820558955cae3c5e",
+      "output_hash": "b43fc1a5f4ba2620c3a514e1ee92e05e070ac297cc33c2ce25cd0456ab21b55d",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -555,10 +595,20 @@
           "source_path": "README.md",
           "source_revision": "kp-update-review@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 release v1.4.0: CHANGELOG [1.4.0] folded from this update's PRs (#16-#26); DayZ 1.30 coverage counts in README section 9 and compatibility-matrix regenerated from the tree (28 skills + dayz-motorbikes). Prepared by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d75152762f5b055e87fcfc866717ce38dc7c8e51391ae8cf6fe13c2a2709b59a",
+          "source_id": "pack-r21-authored",
+          "source_path": "README.md",
+          "source_revision": "release-v1.4.0@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "55872009032fc8b237fd7fb5807c467cfd2a82d916a2d7c7adb020aaf50b647a",
+      "output_hash": "d75152762f5b055e87fcfc866717ce38dc7c8e51391ae8cf6fe13c2a2709b59a",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -651,10 +701,20 @@
           "source_path": "compatibility-matrix.md",
           "source_revision": "kp-update-docs@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-01 release v1.4.0: CHANGELOG [1.4.0] folded from this update's PRs (#16-#26); DayZ 1.30 coverage counts in README section 9 and compatibility-matrix regenerated from the tree (28 skills + dayz-motorbikes). Prepared by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5e3b67ec1caaa1c456f6e195e8809e6046547b1c68891ede278e5faed9fc2b18",
+          "source_id": "pack-r21-authored",
+          "source_path": "compatibility-matrix.md",
+          "source_revision": "release-v1.4.0@2026-10-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "484b15168a329f59fdb3fcfbb2ff02ff4c6e12e5d72977fc5d0804bb88930246",
+      "output_hash": "5e3b67ec1caaa1c456f6e195e8809e6046547b1c68891ede278e5faed9fc2b18",
       "output_path": "compatibility-matrix.md",
       "routing_artifact_id": "root/compatibility-matrix",
       "verification_level": "cross_checked"
