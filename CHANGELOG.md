@@ -27,9 +27,31 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   was driven with: an equivalence of the proxy frame, not a drive through `blender_to_dayz`.
   Wheel `py3d_dayz-1.8.0-py3-none-any.whl`, SHA-256
   `e718442962df8f2d710fafd9ba9406d61f0c9a844b0f2ed40d5415862bcec304`; no installed skill tree
-  vendors the wheel any more, and the site-packages install follows the merge. `dayz-clothing` now spells out the matrix of its det=+1
-  round trip; `dayz-characters` flags its `(x, z, -y)` map, and a winding gate that fails the
-  model measured correct.
+  vendors the wheel any more, and the site-packages install follows the merge.
+- Rig handedness: the det=+1 Blender→DayZ maps that Rule 12 retired were still taught on the
+  character, clothing and animation routes. `dayz-characters` (`character-rigging.md` §6): the
+  official rig's `R⁻¹ = (x,z,-y)` lands in the FBX's own right-handed frame, not in the DayZ bind,
+  so a rigged mesh exports with Rule 12's `(x,z,y)`, the map of `py3d.blender_to_dayz()`; this
+  explains LFInfectedBig walking backward with `(x,z,-y)` and mirrored with `(-x,z,y)`.
+  `check_dayz_winding.py` predates Rule 12 and fails a correct export (measured on the Rule 12
+  probe); the gate to use instead is named. `dayz-clothing`: the "rotate 180° + swap L/R" worn
+  fix keeps a mirror (ArmorHneck's p3d was a det=+1 export); the artist-handoff script
+  `export_clothing_fbx.py` now uses the self-inverse `(x,z,y)` (offline round trip exact, faces
+  outward in Blender); `autofit-from-official-rig.md` drops the face reversal and the
+  mirrored-frame alternative. `dayz-animation-pipeline` and `blender-animation`: the viewer's
+  `(x,z,-y)` is a rotation into a right-handed frame and is relabelled; geometry
+  cross-references now point at Rule 12. Chiral in-game checks are designed for each route, not
+  run. `check_dayz_winding.py` is scoped by the sign of the stored normals, not by the
+  determinant: a det=+1 build with inward normals also fails it, and reversing its faces would
+  turn it inside-out. Fixing a received worn p3d depends on its state: `z → −z` as received,
+  `x → −x` with the L/R swap undone once it was rotated and swapped. `dayz-model-pipeline`: the
+  headless OBJ export recipe exported Y-up (`(x,z,-y)`) before py3d applied Rule 12, and
+  `blender-workflow.md` gave Forward -Y, a 180° turn; both now export Blender's own coordinates
+  (Forward Y / Up Z, measured in Blender 5.1.1), and the four documented `wm.obj_export` calls,
+  which Blender 5.1.1 rejected with `TypeError`, use its parameter names. Its troubleshooting
+  row for Check A's `UNIFORM_NON_FLIPPED` reversed every face; a correct Rule 12 export reads
+  exactly that, so the row now asks for a direction check (signed volume or the per-component
+  check of Rule 18) first.
 
 ## [1.4.0] - 2026-10-01
 
