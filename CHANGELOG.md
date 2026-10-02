@@ -52,6 +52,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   row for Check A's `UNIFORM_NON_FLIPPED` reversed every face; a correct Rule 12 export reads
   exactly that, so the row now asks for a direction check (signed volume or the per-component
   check of Rule 18) first.
+- packctl `promote`: schema-1 receipts sealed in a checkout that no longer exists stopped every
+  `--check` (`PROMOTION-RECEIPT-JOURNAL-MISMATCH` on all nine receipts) and would have stopped
+  the pre-apply journal sweep (`PROMOTION-RECOVERY-REQUIRED`). Such a receipt is now read from
+  a checkout whose HEAD tracks it at `promotions/receipts/<id>.json` with the same raw bytes,
+  only while its sealed path is gone, and it is still matched against the sealed plan and the
+  COMMIT receipt hash. It explains only the concrete target paths it wrote that the check
+  writes again, under this installation's roots. `promotions/adjudications.json` adjudicates
+  the live `dayz-motorbikes` copy, which no receipt explains, for replacement by this version.
 
 ## [1.4.0] - 2026-10-01
 

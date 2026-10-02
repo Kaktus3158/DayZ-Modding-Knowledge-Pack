@@ -422,6 +422,7 @@ def commit_test_receipt(
     schema_version: int = 1,
     installation_id: str | None = None,
     bootstrap: bool = False,
+    sealed_receipt_path: Path | None = None,
 ) -> Path:
     if source_commit is None:
         source_commit = run_git(root, "rev-parse", "HEAD")
@@ -466,7 +467,9 @@ def commit_test_receipt(
             "backup_root": str(backup),
             "allowed_physical_roots": [str(backup.parent)],
             "forbidden_physical_roots": [str(backup.parent / "plugins")],
-            "receipt_path": str(receipt_path.resolve()),
+            "receipt_path": str(
+                (sealed_receipt_path or receipt_path).resolve(strict=False)
+            ),
             "artifact_ids": ["fixture"],
             "target_ids": [target_id],
             "operations": [
@@ -4066,6 +4069,389 @@ def test_v2_receipt_source_commit_must_be_ancestor(
     assert not plan_path.exists()
     assert not (paths["claude"] / "demo").exists()
     assert backup_entries(paths) == backups
+
+
+def _remove_sealed_checkout(root: Path, tmp_path: Path) -> Path:
+    # The checkout that sealed the receipts disappears, as a temporary
+    # worktree does after its merge; the repository lives on elsewhere.
+    moved = tmp_path / "moved-checkout"
+    shutil.move(str(root), str(moved))
+    return moved
+
+
+def test_v1_receipt_of_removed_checkout_is_read_where_head_tracks_it(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    digest = _set_test_target_state(target, "promoted\n")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="c1" * 12, target_id="claude_user_skills",
+        after_digest=digest, completed_at="2026-09-11T12:00:00+00:00",
+    )
+    moved = _remove_sealed_checkout(root, tmp_path)
+
+    report = check_promotion(moved, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-JOURNAL-MISMATCH" not in codes(report)
+    assert "PROMOTION-TARGET-UNEXPLAINED" not in codes(report)
+    assert plan_path.is_file()
+
+
+def test_v1_receipt_of_removed_checkout_untracked_at_head_fails_closed(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    digest = _set_test_target_state(target, "promoted\n")
+    name = "c2" * 12
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name=name, target_id="claude_user_skills",
+        after_digest=digest, completed_at="2026-09-11T12:00:00+00:00",
+    )
+    moved = _remove_sealed_checkout(root, tmp_path)
+    relative = f"promotions/receipts/{name}.json"
+    run_git(moved, "rm", "-q", "--cached", relative)
+    exclude = moved / ".git" / "info" / "exclude"
+    exclude.parent.mkdir(parents=True, exist_ok=True)
+    with exclude.open("a", encoding="utf-8") as handle:
+        handle.write(relative + "\n")
+    run_git(moved, "commit", "-qm", "untrack the receipt")
+
+    report = check_promotion(moved, map_path, config_path, plan_path)
+
+    assert "PROMOTION-DIRTY" not in codes(report)
+    assert "PROMOTION-RECEIPT-JOURNAL-MISMATCH" in codes(report)
+    assert not plan_path.exists()
+
+
+def test_v1_journal_sealed_outside_the_receipts_layout_stays_refused_after_a_move(
+    repo_factory, tmp_path: Path,
+) -> None:
+    # The journal loader refuses a sealed receipt_path other than
+    # <source_root>/promotions/receipts/<id>.json, so relocation never sees it.
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    digest = _set_test_target_state(target, "promoted\n")
+    name = "c3" * 12
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name=name, target_id="claude_user_skills",
+        after_digest=digest, completed_at="2026-09-11T12:00:00+00:00",
+        sealed_receipt_path=tmp_path / "elsewhere" / f"{name}.json",
+    )
+    moved = _remove_sealed_checkout(root, tmp_path)
+
+    report = check_promotion(moved, map_path, config_path, plan_path)
+
+    assert codes(report) == ["PROMOTION-RECEIPT-UNSEALED"]
+    assert not plan_path.exists()
+
+
+def test_v1_promotion_continues_from_a_new_checkout_of_the_repository(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    first = check_promotion(root, map_path, config_path, plan_path)
+    assert first["verdict"] in {"PASS", "WARN"}, codes(first)
+    applied = apply_promotion(plan_path)
+    assert applied["verdict"] == "PASS", codes(applied)
+    commit_published_receipt(root, applied, "v1 receipt")
+    moved = _remove_sealed_checkout(root, tmp_path)
+    skill = moved / "skills/demo/SKILL.md"
+    skill.write_text(
+        "---\nname: demo\ndescription: v2.\n---\n# Demo v2\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    run_git(moved, "add", "skills/demo/SKILL.md")
+    run_git(moved, "commit", "-qm", "fixture v2")
+    second_plan = tmp_path / "second-plan.json"
+
+    checked = check_promotion(moved, map_path, config_path, second_plan)
+    assert checked["verdict"] in {"PASS", "WARN"}, codes(checked)
+    second = apply_promotion(second_plan)
+
+    assert second["verdict"] == "PASS", codes(second)
+    assert (paths["claude"] / "demo" / "SKILL.md").read_bytes() == skill.read_bytes()
+    assert (paths["agents"] / "demo" / "SKILL.md").read_bytes() == skill.read_bytes()
+
+
+def test_journal_sweep_reads_relocated_v1_receipt_only_while_head_tracks_it(
+    repo_factory, tmp_path: Path,
+) -> None:
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    digest = _set_test_target_state(target, "promoted\n")
+    name = "c5" * 12
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name=name, target_id="claude_user_skills",
+        after_digest=digest, completed_at="2026-09-11T12:00:00+00:00",
+    )
+    moved = _remove_sealed_checkout(root, tmp_path)
+
+    promotion._scan_transactions(paths["backups"], live_root=moved)
+
+    run_git(moved, "rm", "-q", "--cached", f"promotions/receipts/{name}.json")
+    run_git(moved, "commit", "-qm", "untrack the receipt")
+    with pytest.raises(promotion._PromotionIntegrityError) as raised:
+        promotion._scan_transactions(paths["backups"], live_root=moved)
+    assert raised.value.code == "PROMOTION-RECOVERY-REQUIRED"
+    assert raised.value.evidence == f"{name}:{name}:receipt-missing"
+
+
+def _tracked_receipt_and_plan(
+    repo_factory, tmp_path: Path, name: str,
+) -> tuple[Path, dict[str, object]]:
+    # A receipt that HEAD tracks, sealed by a checkout that no longer exists:
+    # with schema_version 1 every relocation condition holds.
+    root, _, _, _, _ = promotion_fixture(repo_factory, tmp_path)
+    receipt = root / "promotions" / "receipts" / f"{name}.json"
+    receipt.parent.mkdir(parents=True, exist_ok=True)
+    receipt.write_bytes(b"{}\n")
+    run_git(root, "add", receipt.relative_to(root).as_posix())
+    run_git(root, "commit", "-qm", "add receipt")
+    gone = tmp_path / "gone"
+    plan: dict[str, object] = {
+        "schema_version": 1,
+        "source_root": str(gone),
+        "receipt_path": str(gone / "promotions" / "receipts" / f"{name}.json"),
+    }
+    assert promotion._relocated_v1_receipt(root, plan, name) == receipt
+    return root, plan
+
+
+def test_relocated_v1_receipt_rule_ignores_schema_2_plans(
+    repo_factory, tmp_path: Path,
+) -> None:
+    name = "c4" * 12
+    root, plan = _tracked_receipt_and_plan(repo_factory, tmp_path, name)
+    plan["schema_version"] = 2
+
+    assert promotion._relocated_v1_receipt(root, plan, name) is None
+
+
+def test_relocated_v1_receipt_requires_the_blob_at_head_not_the_index(
+    repo_factory, tmp_path: Path,
+) -> None:
+    name = "c6" * 12
+    root, plan = _tracked_receipt_and_plan(repo_factory, tmp_path, name)
+    relative = f"promotions/receipts/{name}.json"
+    run_git(root, "rm", "-q", "--cached", relative)
+    run_git(root, "commit", "-qm", "drop the receipt from HEAD")
+    run_git(root, "add", relative)
+
+    assert promotion._relocated_v1_receipt(root, plan, name) is None
+
+
+def test_relocated_v1_receipt_refuses_a_linked_receipts_directory(
+    repo_factory, tmp_path: Path,
+) -> None:
+    name = "c7" * 12
+    root, plan = _tracked_receipt_and_plan(repo_factory, tmp_path, name)
+    receipts = root / "promotions" / "receipts"
+    real = root / "promotions" / "receipts-real"
+    receipts.rename(real)
+    if not try_dir_link(real, receipts):
+        pytest.skip("cannot create a directory link here")
+
+    assert promotion._relocated_v1_receipt(root, plan, name) is None
+
+
+def test_v1_relocated_receipt_does_not_explain_targets_of_another_installation(
+    repo_factory, tmp_path: Path,
+) -> None:
+    # Same backup root, receipt copied into HEAD, other target directories
+    # holding the same bytes: the receipt is not about them.
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    digest = _set_test_target_state(target, "promoted\n")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="c8" * 12, target_id="claude_user_skills",
+        after_digest=digest, completed_at="2026-09-11T12:00:00+00:00",
+    )
+    moved = _remove_sealed_checkout(root, tmp_path)
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    for target_id in ("claude_user_skills", "agents_user_skills", "obsidian_snapshots"):
+        elsewhere = paths["targets"] / f"elsewhere-{target_id}"
+        elsewhere.mkdir()
+        config["targets"][target_id]["path"] = str(elsewhere)
+    other_config = tmp_path / "other-local-targets.json"
+    write_json(other_config, config)
+    other_target = paths["targets"] / "elsewhere-claude_user_skills" / "demo"
+    assert _set_test_target_state(other_target, "promoted\n") == digest
+
+    report = check_promotion(moved, map_path, other_config, plan_path)
+
+    mismatches = [
+        item for item in report["findings"]
+        if item["code"] == "PROMOTION-RECEIPT-JOURNAL-MISMATCH"
+    ]
+    assert [item["evidence"] for item in mismatches] == [
+        "relocated-receipt-targets-outside-installation"
+    ]
+    assert not plan_path.exists()
+
+
+def test_v1_relocated_receipt_does_not_explain_a_path_it_did_not_write(
+    repo_factory, tmp_path: Path,
+) -> None:
+    # Same installation root, another concrete path: the sealed write went to
+    # claude/renamed-demo, this check writes claude/demo.
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    sealed_target = paths["claude"] / "renamed-demo"
+    digest = _set_test_target_state(sealed_target, "promoted\n")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=sealed_target,
+        name="cc" * 12, target_id="claude_user_skills",
+        after_digest=digest, completed_at="2026-09-11T12:00:00+00:00",
+    )
+    moved = _remove_sealed_checkout(root, tmp_path)
+    assert _set_test_target_state(paths["claude"] / "demo", "promoted\n") == digest
+
+    report = check_promotion(moved, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-JOURNAL-MISMATCH" not in codes(report)
+    unexplained = [
+        str(item["evidence"]) for item in report["findings"]
+        if item["code"] == "PROMOTION-TARGET-UNEXPLAINED"
+    ]
+    assert len(unexplained) == 1 and unexplained[0].startswith("target=claude_user_skills ")
+    assert not plan_path.exists()
+
+
+def test_relocated_v1_receipt_refuses_an_unreadable_sealed_path(
+    repo_factory, tmp_path: Path, monkeypatch,
+) -> None:
+    # Present but unreadable is not gone (Path.exists() answers False here).
+    name = "cd" * 12
+    root, plan = _tracked_receipt_and_plan(repo_factory, tmp_path, name)
+    sealed = os.path.normcase(str(plan["receipt_path"]))
+    real_lstat = os.lstat
+
+    def lstat(path, *args, **kwargs):
+        if os.path.normcase(os.fspath(path)) == sealed:
+            raise PermissionError(13, "Access is denied", os.fspath(path))
+        return real_lstat(path, *args, **kwargs)
+
+    monkeypatch.setattr(promotion.os, "lstat", lstat)
+
+    assert promotion._relocated_v1_receipt(root, plan, name) is None
+
+
+def test_relocated_v1_receipt_compares_raw_head_bytes_not_filtered_ones(
+    repo_factory, tmp_path: Path,
+) -> None:
+    # A clean filter stores E in HEAD while the file on disk keeps D: hashes
+    # taken through the filter would agree, the raw blob does not.
+    root, _, _, _, _ = promotion_fixture(repo_factory, tmp_path)
+    flip = tmp_path / "flip.py"
+    flip.write_text(
+        "import sys\n"
+        "data = sys.stdin.buffer.read()\n"
+        "a, b = b'\"schema_version\":1', b'\"schema_version\":9'\n"
+        "sys.stdout.buffer.write(data.replace(a, b) if sys.argv[1] == 'clean' else data.replace(b, a))\n",
+        encoding="utf-8",
+    )
+    command = f'"{Path(sys.executable).as_posix()}" "{flip.as_posix()}"'
+    run_git(root, "config", "filter.flip.clean", f"{command} clean")
+    run_git(root, "config", "filter.flip.smudge", f"{command} smudge")
+    attributes = root / ".git" / "info" / "attributes"
+    attributes.parent.mkdir(parents=True, exist_ok=True)
+    attributes.write_text("promotions/receipts/*.json filter=flip\n", encoding="utf-8")
+    name = "ce" * 12
+    relative = f"promotions/receipts/{name}.json"
+    receipt = root / relative
+    receipt.parent.mkdir(parents=True, exist_ok=True)
+    receipt.write_bytes(b'{"schema_version":1}\n')
+    run_git(root, "add", relative)
+    run_git(root, "commit", "-qm", "add a filtered receipt")
+    head_blob = subprocess.run(
+        ["git", "cat-file", "blob", f"HEAD:{relative}"],
+        cwd=root, capture_output=True, check=True,
+    ).stdout
+    assert head_blob == b'{"schema_version":9}\n'
+    assert receipt.read_bytes() == b'{"schema_version":1}\n'
+    gone = tmp_path / "gone"
+    plan = {
+        "schema_version": 1,
+        "source_root": str(gone),
+        "receipt_path": str(gone / "promotions" / "receipts" / f"{name}.json"),
+    }
+
+    assert promotion._relocated_v1_receipt(root, plan, name) is None
+
+
+def test_v1_receipt_is_not_relocated_while_its_sealed_path_exists(
+    repo_factory, tmp_path: Path,
+) -> None:
+    # Check and journal sweep pick the same copy: the sealed one, if present.
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    target = paths["claude"] / "demo"
+    digest = _set_test_target_state(target, "promoted\n")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="c9" * 12, target_id="claude_user_skills",
+        after_digest=digest, completed_at="2026-09-11T12:00:00+00:00",
+    )
+    copy = tmp_path / "second-checkout"
+    shutil.copytree(root, copy)
+
+    report = check_promotion(copy, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-JOURNAL-MISMATCH" in codes(report)
+    assert not plan_path.exists()
+    promotion._scan_transactions(paths["backups"], live_root=copy)
+
+
+def test_v1_relocated_receipt_needs_no_ancestry(
+    repo_factory, tmp_path: Path,
+) -> None:
+    # The real receipts name commits of squash-merged branches.
+    root, map_path, config_path, plan_path, paths = promotion_fixture(
+        repo_factory, tmp_path,
+    )
+    branch = run_git(root, "rev-parse", "--abbrev-ref", "HEAD")
+    run_git(root, "checkout", "-q", "-b", "squashed-away")
+    run_git(root, "commit", "-q", "--allow-empty", "-m", "branch work")
+    side_commit = run_git(root, "rev-parse", "HEAD")
+    run_git(root, "checkout", "-q", branch)
+    target = paths["claude"] / "demo"
+    digest = _set_test_target_state(target, "promoted\n")
+    commit_test_receipt(
+        root, backup_root=paths["backups"], target_path=target,
+        name="ca" * 12, target_id="claude_user_skills",
+        after_digest=digest, completed_at="2026-09-11T12:00:00+00:00",
+        source_commit=side_commit,
+    )
+    moved = _remove_sealed_checkout(root, tmp_path)
+    assert not promotion._git_is_ancestor(moved, side_commit)
+
+    report = check_promotion(moved, map_path, config_path, plan_path)
+
+    assert "PROMOTION-RECEIPT-JOURNAL-MISMATCH" not in codes(report)
+    assert "PROMOTION-RECEIPT-COMMIT-NOT-ANCESTOR" not in codes(report)
+    assert plan_path.is_file()
 
 
 def test_bootstrap_duplicate_installation_id_fails_closed(
