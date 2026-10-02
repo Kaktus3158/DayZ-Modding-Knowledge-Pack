@@ -461,10 +461,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-mcp-verify-collision-probes@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Fixed entry for the killer #1 quote: killers-detail.md line 63 (killer #1, note on generating or editing a collision LOD) quoted the text of py3d's relative-check message, 'winding is INVERTED relative to the Visual LOD' (tools/py3d/py3d/__init__.py:1187 on main eca85e6), which PR #40 rewrites; the line now names the finding by its code, ERR_WINDING_INVERTED, as line 44 of the same note already does. Edited within the line: no line moved, no claim range shifted. git grep on main found no other skill or knowledge file quoting that message text. Authored by Claude (Anthropic) on the owner's request (2026-10-02: fix the pending stale quote flagged during PR #40); PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "61b88c32fae85ba76b6f8f6c0ae54018cb90099cfc595f02a92372b1024cbd69",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-killers-quote@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e63c719640a8704b3f33c0c7ed47458ca2d6d9484f4dea22fc43c138cf50a358",
+      "output_hash": "61b88c32fae85ba76b6f8f6c0ae54018cb90099cfc595f02a92372b1024cbd69",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7964,10 +7974,20 @@
           "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
           "source_revision": "kp-update-p3d-audit-killer2@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "killers-detail.md line 63 (killer #1, note on generating or editing a collision LOD) quoted the text of py3d's relative-check message, 'winding is INVERTED relative to the Visual LOD' (tools/py3d/py3d/__init__.py:1187 on main eca85e6), which PR #40 rewrites; the line now names the finding by its code, ERR_WINDING_INVERTED, as line 44 of the same note already does. Edited within the line: no line moved, no claim range shifted. git grep on main found no other skill or knowledge file quoting that message text. Authored by Claude (Anthropic) on the owner's request (2026-10-02: fix the pending stale quote flagged during PR #40); PR reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "b25d3fdee2d8f94c0e7ffe1b22a4d50ef36d87382dbea00a838ccaef2f66d2b8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
+          "source_revision": "kp-update-killers-quote@2026-10-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "010920c5b4a4df7ca742637ef7baeecec262fc4c407ec20970e382a493cc213b",
+      "output_hash": "b25d3fdee2d8f94c0e7ffe1b22a4d50ef36d87382dbea00a838ccaef2f66d2b8",
       "output_path": "skills/dayz-p3d-audit/references/killers-detail.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
