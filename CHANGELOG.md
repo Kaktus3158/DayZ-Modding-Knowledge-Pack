@@ -60,6 +60,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   indents it. On `3e22429` the check reads 923 of the 932 tracked files (the 9 it skips are binary
   test fixtures) and reports those three lines only; a longer run, such as the 33 `=` at
   `skills/dayz-pbo-build/SKILL.md:337`, is not a marker. Tests in `tests/packctl/test_validation.py`.
+- `dayz-mcp-verify`: two sections that a session testing a mod through the MCP wrote into the
+  installed copy on 2026-10-03, ported in English without private names; the live copy is
+  re-adjudicated in `promotions/adjudications.json`, so the next promotion replaces it with this one.
+  "Check which mod a run loaded before reading its verdict": `dayz_test_run` boots the registered
+  project its `project` argument names (an unregistered name is rejected with `bad_project`) and
+  reports `succeeded` for it, intended or not; one run loaded another registered mod, and the missing
+  compile errors of the mod under test were read as a fix, so the run's `-mod=` and `-mission=` are
+  read in its RPT first, with `dayz-test-ingame`'s procedure. "`unapproved_debug_image` on a host
+  with a non-English culture: check the server's code first": a build on a host with a Spanish
+  culture was seen rejected for loading a localized .NET resource satellite; the MCP server's debug
+  gate admits those since a fix of 2026-10-01, so the section sends the reader to the code the
+  running server was started from and to its stderr log, instead of calling it a standing defect as
+  the live text did.
+  A third section it had written, a Mission-module lesson about a class holding a `static ref` to
+  itself, was retracted by its author as measured on the wrong mod and is not ported; vanilla 1.29
+  contradicts it as well (`VicinityItemManager` holds one and its module compiles).
 
 ### Changed
 
