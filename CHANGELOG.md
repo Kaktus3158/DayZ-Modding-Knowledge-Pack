@@ -140,10 +140,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   entity was created, or an admin's console spawn. The rule: an unregister needs a matching id, and
   an entity without one never touches the file; in game (DayZDiag 1.29), with that rule, a console
   entity 0.3 m (horizontally) from a registered one was created and deleted, the registry kept its
-  SHA-256 and the registered entity came back after the restart. Restore binds by id: a candidate
-  inside the radius without the entry's id is a conflict to log, neither bound nor duplicated
-  ([DESIGN]), since `GetObjectsAtPosition3D` promises no order and three traced cases show a
-  position match taking the wrong entity or creating a second one; a restore pass still queued in
+  SHA-256 and the registered entity came back after the restart. Restore binds by id, since
+  `GetObjectsAtPosition3D` promises no order and three traced cases show a position match taking
+  the wrong entity or creating a second one (the [DESIGN] restore rule added with it is withdrawn,
+  see Fixed); a restore pass still queued in
   `CALL_CATEGORY_SYSTEM` is removed (`ScriptCallQueue.Remove`) before the shutdown flag is set, so
   the shutdown's deletions cannot unregister entries; both were read in the code and not reproduced
   in game. The entry-point audit gains the worked example, the invariant's entry points and a search
@@ -331,6 +331,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-persistence` Hard stops item 9 and point 2 of "A registry entry leaves by its id, never by
+  proximity" (#97), and the matching search in `rigorous-data-audit`'s entry-point audit: point 2
+  no longer gives a restore rule. The [DESIGN] rule merged in #97 created an entry's entity
+  whenever the radius held none of its class, and a post-merge cross-family review traced that
+  into a second entity. Three [DESIGN] rules written to replace it came out UNSOUND in review too:
+  one kept a list of the restore's own creations per mission and bound each entity as it loaded (a
+  second entity after a mission change; the wrong one when two loaded entities carry one id), one
+  kept a list of every live entity through `EEInit` and `EEDelete` (a second entity from a pass
+  started inside a creation), and one reserved the entry while its entity was created (a second
+  entity from a pass that reloads the registry, and an entry reserved for good when its creation
+  fails). Point 2 now keeps what the vanilla scripts and SecretRock's code show (only the id can
+  bind; `GetObjectsAtPosition3D` promises no order, so a position match proves nothing) and lists
+  the traced failures, the wrong entity and a second one, as an open problem with no rule reviewed
+  sound. Item 9 stops a restore that gives an entry a new entity while one it already had may
+  still live, and the audit search no longer calls a candidate without the id "a conflict to
+  log". Traced through the code and the rules' text; none of it was reproduced in game.
 - `dayz-pbo-build` SP-155 rule 1: a staged binarize looks for every file the p3d cite under the
   staging folder, which AddonBuilder passes as `-addon` (the source's parent), never under `P:\`,
   and embeds a face material it cannot find EMPTY in the ODOL (no shader, no stage texture, no

@@ -921,10 +921,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-inbc-pbo-sp155@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "[Unreleased] Fixed entry for the fix-forward of PR #97: point 2 no longer gives a restore rule; the rule merged in #97 and the three [DESIGN] rules written to replace it came out UNSOUND in cross-family review, and the traced failures are listed as an open problem. The #97 Added entry now says its [DESIGN] restore rule is withdrawn.",
+          "license": "MIT",
+          "source_hash": "a78ea7f253878c3b5b03be313c043b2cecd13fc66991c64067cdfbccb4985f39",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-spb-restore-absence@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "faadbdd1605267413e7201dc038bbdd47851442dae7f803534eff2119663f208",
+      "output_hash": "a78ea7f253878c3b5b03be313c043b2cecd13fc66991c64067cdfbccb4985f39",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -10184,10 +10194,20 @@
           "source_path": "skills/dayz-persistence/SKILL.md",
           "source_revision": "kp-update-spb-unregister-id@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03, fix-forward of PR #97 (SP-456): point 2 of the section 'A registry entry leaves by its id, never by proximity' no longer gives a restore rule, and Hard stops item 9 says so. The [DESIGN] rule merged in #97 (an empty radius read as absence) came out UNSOUND in its post-merge cross-family review (R21-05), and the three [DESIGN] rules this PR wrote in its place came out UNSOUND in its three review rounds (R21-06 and R21-07; R21-08; R21-09 and R21-10). Point 2 keeps what the vanilla scripts and SecretRock's code show (only the id can bind; GetObjectsAtPosition3D promises no order, so a position match proves nothing) and lists the traced failures, the wrong entity (R21-01, R21-03, R21-07) and a second one (R21-04 to R21-06, R21-08, R21-09), plus the liveness defect R21-10, as an open problem with no automatic rule reviewed sound; item 9 stops a restore that gives an entry a new entity while one it already had may still live. Claim CLAIM-PERS-RESTORE-BIND-BY-ID updated, CLAIM-PERS-SHUTDOWN-QUEUE moved to its marker. Review of this text (Codex, round 1 on 075d090): SOUND, with two P3 wording fixes applied (R21-11, R21-12). Cross-family review by Codex. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2beb6bea0ec2757e5b6cbea651595e40ce356e64aaa6a5792760857b23c697b4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/SKILL.md",
+          "source_revision": "kp-update-spb-restore-absence@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "387413b0d9fa47025fed9e0bc210a04397d21ccf5015071564868fc66864ce69",
+      "output_hash": "2beb6bea0ec2757e5b6cbea651595e40ce356e64aaa6a5792760857b23c697b4",
       "output_path": "skills/dayz-persistence/SKILL.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
@@ -15304,10 +15324,20 @@
           "source_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
           "source_revision": "kp-update-spb-unregister-id@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03, fix-forward of PR #97: the Step 3 search 'Proximity used as identity' no longer calls a candidate without the entry's id 'a conflict to log' (part of the withdrawn [DESIGN] restore rule); it keeps that such a candidate is not a match and that an empty radius does not prove the entry's entity gone (post-merge review R21-05), and says that how a restore should bind and create is an open problem, with a pointer to dayz-persistence Hard stops item 9 and point 2. The first candidate is now 'not guaranteed to be the nearest' rather than 'not even the nearest' (review P3 R21-11). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "15704c6fc1b0d3aa0738b4ca666f87acb8a3c50a374d2acf96f9f8ce68dd2677",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
+          "source_revision": "kp-update-spb-restore-absence@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f5e7529b85e37f60f25315d9911164e08d3988daa98b994ec41d8fa6c78b62c1",
+      "output_hash": "15704c6fc1b0d3aa0738b4ca666f87acb8a3c50a374d2acf96f9f8ce68dd2677",
       "output_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -16945,10 +16975,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-spb-physics-walk@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Updates CLAIM-PERS-RESTORE-BIND-BY-ID (source_verified) with the six review rounds of the restore rules (R21-01, R21-03 to R21-10) and the rule's withdrawal, and moves CLAIM-PERS-SHUTDOWN-QUEUE to the line its marker now holds; its evidence and level are unchanged.",
+          "license": "MIT",
+          "source_hash": "411ee496e97405be2410d31e4dba745ae6507659ed6513f3af606b73fef12c54",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-spb-restore-absence@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "74f313f1716fa701d75338d6c70705d5b8aea56a9c09d44af85c7b2f78a55b26",
+      "output_hash": "411ee496e97405be2410d31e4dba745ae6507659ed6513f3af606b73fef12c54",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
