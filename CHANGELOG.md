@@ -331,6 +331,30 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-pbo-build` SP-155 rule 1: a staged binarize looks for every file the p3d cite under the
+  staging folder, which AddonBuilder passes as `-addon` (the source's parent), never under `P:\`,
+  and embeds a face material it cannot find EMPTY in the ODOL (no shader, no stage texture, no
+  `.bisurf`) while the build says "Build Successful". The rule called the "Material not loaded"
+  messages of a staged build tolerable; the ArmorHneck ODOL it cited as working (deployed
+  2026-08-04) carries its Fire Geometry material `armor_5mm_plate.rvmat` empty. The rule now
+  stages the cited files beside the mod (copies, or a `DZ` junction to the extracted vanilla
+  data). A new rule 5 checks, before the build, that every path the faces cite exists under the
+  staging folder, and reads the ODOL afterwards as a control: an unresolved material has no
+  shader, stage or surface and the engine's default colours, but bare vanilla `.rvmat`s
+  (`half_lighted_default`, `streambed_leaves`, `default_2pass`) embed much the same, so a match
+  is a lead to confirm against the text `.rvmat` (CfgConvert decoded a binarized `wood.rvmat`
+  from `.bin` to `.cpp`). Measured: CocaLab
+  (2026-09-27; gate control without the files: 6 failures) and the DayZ MCP v1.3.1 spike on
+  SimpleGroup (2026-10-01, 11 builds): binarize parses every `config.cpp` under `-addon`, through
+  junctions; AddonBuilder exits 0 with `[ResultCode]=1`; `-project=<source>` drops every `.paa`,
+  `.rvmat` and `texHeaders.bin` from the PBO; with the mod alone under `-addon`, `T1_FlagKit.p3d`
+  embeds its two `dz\` materials empty, and with a `DZ` junction beside it, it is byte-identical
+  to the production build. `dayz-clothing` BUILD step 1 points at the rule. SP-069 rule 1 no
+  longer says `-temp` "must stay under `P:\`": with the spike's nine binarized builds in a local
+  `-temp` added to four earlier ones, `P:\` is the habit, not a measured requirement. The
+  "Gate ordering" paragraph says AddonBuilder's own exit code is 0 on a failed build. Not
+  measured: what an empty material does in game. The replaced sentences are quoted in dated
+  notes.
 - `dayz-ui-development`: exact units are 1/1080 of the screen height, and an unnumbered face
   with no size key follows its box. Rule 3 called `hexact*`/`vexact* 1` physical screen pixels and advised
   proportional units by default. Measured in game, exact units scale with the screen height on
