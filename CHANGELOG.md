@@ -7,6 +7,48 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-texture-pipeline` `scripts/normal_convention.py`: proposes whether a normal map is
+  OpenGL (Y+) or DirectX (Y-) from two independent readings, and only when they agree; the
+  candidate is confirmed another way before a channel is inverted. The albedo reading: the albedo's dark grooves mark the hollows; across a hollow
+  d(nx)/dx and d(ny)/dy share their sign in DirectX and oppose it in OpenGL, and the red channel
+  calibrates the sign. The curl reading needs no albedo: a height field's slopes have no curl
+  under one convention only. Exit 0 with a verdict, 2 `INCONCLUSIVE`, 1 bad input; `--json`
+  writes null for undefined numbers. The albedo reading is contributed from LFPowerGrid_dev
+  `assets/heater/normal_convencion.py` (commit `a4c6e29`, the Pack owner's; pipeline ticket
+  `fb-20260921-164248-a140`) and returns its numbers exactly on the heater maps (red −0.1296,
+  green −0.0851, 491,775 pixels); a non-finite correlation is now `INCONCLUSIVE` (the original
+  read NaN as DirectX). The cross-family review found the albedo reading wrong, with strong
+  correlations, on a surface that curves one way along x and the other along y, and a missing
+  weak-correlation test; the curl reading, the agreement rule and both fixtures followed. Its
+  second round built known-DirectX maps both readings call OpenGL (a tangent-space bake on a
+  sphere patch, undersampled tileable detail) and a weak-channel mutant the tests missed: the
+  output became a candidate to confirm, and one-weak-channel tests followed. Its third round
+  found that a raking light parallel to U renders a map and its inverted-green copy alike: the
+  docs now say that the light must cross V and the inverted copy must read the known groove as a
+  ridge, and that renders that look the same are inconclusive. A product test on vanilla maps
+  (2026-10-04) found that an `OpenGL` candidate cannot tell an inverted green from a red inverted
+  against the relief; the docs say to check red on a known joint first. The same test found a
+  vanilla map whose curl residuals sat half a quantization step apart read OpenGL: the curl
+  reading now abstains unless its two medians differ by more than one 8-bit step of the normal
+  (2/255), a heuristic floor rather than a bound on rounding noise. A second product test found a flat brick decal and a cloth bag that read OpenGL with
+  readings that agree on the whole map but not block by block: a candidate now also has to hold
+  across a 6×6 grid of blocks, with at most 1 block in 10 against it for the curl reading and
+  1 in 3 for the albedo reading. On 284 vanilla pairs never used to design that check it gave
+  157 `DirectX`, 119 `INCONCLUSIVE` and 8 `OpenGL`, all 8 OpenGL-consistent by their own
+  features; one design-sample map (`kancel_008_nohq`, DirectX by its glass panes) still reads
+  OpenGL with stable blocks. Over the three samples that is 1 wrong candidate in 502, no N1 error
+  and about 41 % `INCONCLUSIVE`; the Pack owner accepted that rate on 2026-10-04, and maps that mix
+  the two conventions inside every block are documented as a known limit. The review of that
+  version found that an inverted-green copy could break a tie only on one side: the normal is now
+  decoded as (2c − 255)/255, which negates exactly, so the copy always gives the opposite verdict
+  and the same block counts. On the heater both
+  readings say DirectX (curl residuals 0.013 against 0.024), not confirmed another way; nothing
+  was checked in game. SKILL.md rule 3, `map-conventions.md` and `validation-checklist.md` point at it.
+  `tests/test_normal_convention.py` (40 tests) encodes synthetic height fields as DirectX and as
+  OpenGL and reads them back; nine mutants of the detector, nine of the floor and twenty-nine of
+  the block check, the decoding and the readers' masks each fail it. It skips where numpy
+  or Pillow is missing, as on the CI runner. The ticket's second script (`uv_convencion.py`,
+  V convention of a validated p3d) is not part of this change.
 - `dayz-mcp-verify`: one section ported from the installed copy (added 2026-10-04, written by the
   orchestration session that ran a seed-and-prune strike scenario against an LFPowerGrid PR) and
   corrected in the review of PR #105: "A server HANG is bounded by log tails first" — read both log
