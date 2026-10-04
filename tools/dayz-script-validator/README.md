@@ -34,7 +34,7 @@ Exit `0` = PASS, `1` = FAIL, `2` = WARN. Findings are JSON on stdout.
 
 ## Checks that need more than one file
 
-Most rules read a single file. Two read the tree, and one of them needs a root
+Most rules read a single file. Three read the tree, and two of them need roots
 outside the addon:
 
 - `ES-PROTECTED-CROSS-MODULE` compares modules against each other. Enforce
@@ -53,6 +53,54 @@ python tools/dayz-script-validator/scripts/script_validator.py <addon_root> `
 Both only fire when the receiver's declared type resolves inside the addon.
 That is deliberate: judging by member name alone produced 164 false positives
 on a tree that compiles clean.
+
+- `ES-UNDEFINED-CLASS-REF` (FAIL) flags a class-like name (first letter upper
+  case) used where only a type fits -- `Name.Method(`, `Name.Cast(`,
+  `new Name`, a template argument, a typed declaration at the start of a line
+  -- when no `class`, `enum` or `typedef` of that name exists in the addon,
+  in the vanilla scripts tree or in any `--external-scripts` root. Found on
+  TransferZ PR #12, which deleted a `4_World` class that `5_Mission` still
+  called: a guaranteed Mission compile failure the linter reported as WARN
+  with 0 errors. The vanilla tree comes from `--vanilla-root`, then
+  `DAYZ_VANILLA_ROOT`, then `P:\scripts`.
+
+```powershell
+python tools/dayz-script-validator/scripts/script_validator.py <addon_root> `
+    --external-scripts <CF_root>
+```
+
+Pass each dependency's root, the folder that holds its `config.cpp`: the rule
+reads that file's `CfgPatches` to know which `requiredAddons[]` entry the
+root covers, so a root without it leaves the dependency uncovered.
+
+It judges only when it can see every place the type could be declared, and
+otherwise lists what it could not judge under `info.skipped_checks` (and as a
+`SKIP` line in `--terse`) without changing the status:
+
+| Situation | Result |
+|---|---|
+| no vanilla tree, or a folder that declares no `class Managed` | SKIP: every vanilla type would look undefined |
+| `requiredAddons[]` names an addon that is not a vanilla patch and that no scanned root declares in `CfgPatches`, directly or as the dependency of a scanned dependency | SKIP with the unresolved names; pass that addon's root with `--external-scripts` to get verdicts |
+| a `requiredAddons[]` entry that is not a string literal (a macro, a number) | SKIP: that dependency is unknown |
+| no `config.cpp` in the tree lists any `requiredAddons[]` entry | SKIP: dependencies unknown |
+| code under `#ifdef`/`#ifndef` of a macro that vanilla does not test and no scanned script `#define`s or `CfgMods defines[]` lists | not judged: usually another mod's flag |
+| the `#ifndef` or `#else` branch of a macro that a scanned script `#define`s, or a scanned `CfgMods defines[]` lists, on a line the preprocessor always keeps (outside every block, or under an `#ifdef` of a macro the same file defines first) | not judged: that branch never compiles |
+
+A mod that uses another mod's classes without listing it in `requiredAddons[]`
+does get the FAIL; the message names both remedies. "Vanilla patch" means one
+of the 211 `CfgPatches` names of `P:\DZ` (1.29.0.163451), the scripts tree and
+the 1.30.164014 Exp data, listed in `scripts/shared/vanilla_patches.py`. A
+`DZ_` prefix is not enough: four mod patches under `P:\` use it too.
+
+Measured on 2026-09-19 with the first version of the rule: 33 003 references
+judged on the vanilla tree with no finding; over 161 addon roots under `P:\`
+it left 12 FAILs in 3 roots (one probable real bug, two recovered-source trees
+that use a sibling mod they do not declare) and 32 SKIPs whose unresolved
+names all belong to mods. Reading the vanilla tree adds about 0.9 s per
+invocation (2.6 s against 1.7 s on a 23-file addon, four runs each). On
+2026-10-03, after the fixes from two rounds of cross-family review, the
+vanilla tree gave the same 33 003 references and no finding; the 161 roots
+were not measured again.
 
 ## Compile errors read from one file
 
@@ -133,7 +181,10 @@ python scripts/vanilla_control.py
 ```
 
 `--vanilla-root` defaults to `DAYZ_VANILLA_ROOT`, then `P:\scripts` if that
-path exists. `--baseline` defaults to
+path exists. The control passes the tree as its own vanilla root, so
+`ES-UNDEFINED-CLASS-REF` runs instead of skipping, and vanilla's empty
+`requiredAddons[]` is not read as "dependencies unknown": a false positive of
+that rule fails the control rather than hiding in a SKIP. `--baseline` defaults to
 `tests/baselines/vanilla_control_baseline.json` next to this tool, not the
 cwd. `--update` rewrites the baseline on purpose after a DayZ patch or an
 accepted change; it prints what moved. Exit 0 is PASS, 1 is FAIL, 2 is

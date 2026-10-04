@@ -215,6 +215,31 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   type name` needs the vanilla tree's class names, and `Formula too complex` has no measured limit
   (vanilla compiles a statement with 14 `+`; the one that failed had about 20 terms and its source
   is gone).
+- `dayz-script-validator`: `ES-UNDEFINED-CLASS-REF` (FAIL), a third tree-level check, and
+  `--vanilla-root DIR` (default `DAYZ_VANILLA_ROOT`, then `P:\scripts`). The public mod TransferZ,
+  PR #12 at `11da911`, deleted a `4_World` class that `5_Mission` still called
+  (`TransferZ_MaintenanceClient.c:59`, `TransferZExternalStagingSortPlanner.Sort(player, source)`).
+  No module of the mod, of vanilla or of CF declared the type, so the Mission module could not
+  compile, and the linter answered WARN with 0 errors. The rule flags a class-like name (first
+  letter upper case) used where only a type fits (`Name.Method(`, `Name.Cast(`, `new Name`, a
+  template argument, a typed declaration at the start of a line) when no `class`, `enum` or
+  `typedef` of that name exists in the addon, the vanilla tree or an `--external-scripts` root.
+  Not booted: the compile failure follows from the missing declaration. Where it cannot see every
+  place the type could be declared, it lists what it could not judge under `info.skipped_checks`
+  (and as a `SKIP` line in `--terse`) instead of a finding, and the status does not change: no
+  usable vanilla tree (absent, or declaring no `class Managed`); a dependency, direct or required
+  by a scanned dependency, that is not one of the 211 vanilla patch names
+  (`scripts/shared/vanilla_patches.py`; mods use the `DZ_` prefix too) and that no scanned root
+  declares in `CfgPatches`; a `requiredAddons[]` entry that is not a string literal; or no
+  `requiredAddons[]` entry at all. Pass each dependency's root, the folder with its `config.cpp`,
+  with `--external-scripts` to get verdicts. Variables declared after a comma
+  (`string a, B;`) count as variables, while the commas of template arguments and of comparisons
+  do not, and the `#ifndef`/`#else` branch of a macro that a scanned script `#define`s, or a
+  scanned `CfgMods defines[]` lists, on a line the preprocessor always keeps is not judged.
+  `vanilla_control.py` passes the tree as its own vanilla root, so the rule runs there instead of
+  skipping, and the control still matches its baseline.
+  On the TransferZ tree with CF passed, the first version of the rule reported one FAIL, on that
+  line, and none on the mod's `main` at `2c7d5c1` (2026-09-19).
 
 ### Changed
 
